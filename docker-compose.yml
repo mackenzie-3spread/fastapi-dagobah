@@ -13,6 +13,8 @@ services:
     volumes:
       - ./app:/app/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - fastapi-network
 
   postgres:
     image: postgres:15-alpine
@@ -24,6 +26,31 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fastapi-network
+
+  # Production-ready version (connects to existing APISIX database)
+  fastapi-production:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:hbHJVXmHW3ddflCtDg7NLVOCVq96edY@postgres:5432/dagobah_db
+      - DEBUG=false
+    volumes:
+      - ./app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - apisix-network
+    profiles:
+      - production
+
+networks:
+  fastapi-network:
+    driver: bridge
+  apisix-network:
+    external: true
+    name: apisix-network
 
 volumes:
   postgres_data:

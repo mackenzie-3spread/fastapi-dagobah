@@ -28,19 +28,81 @@ app/
 
 ## Quick Start
 
-1. **Copy environment variables:**
-   ```bash
-   cp .env.example .env
-   ```
+**Prerequisites:** APISIX stack must be running first.
 
-2. **Start with Docker Compose:**
-   ```bash
-   docker-compose up --build
-   ```
+```bash
+# Start APISIX (in separate terminal)
+cd /3spread/apisix-dagobah
+docker-compose up -d
 
-3. **API Documentation:**
-   - Swagger UI: http://localhost:8000/api/v1/docs
-   - ReDoc: http://localhost:8000/api/v1/redoc
+# Start FastAPI Dagobah
+cd /3spread/fastapi-dagobah
+./deploy.sh start
+```
+
+**API Documentation:**
+- Swagger UI: http://localhost:8001/api/v1/docs
+- ReDoc: http://localhost:8001/api/v1/redoc
+
+## Deployment
+
+### Using the Deploy Script
+
+The `deploy.sh` script provides simple management of the FastAPI service:
+
+```bash
+# Start service (checks APISIX dependencies)
+./deploy.sh start
+
+# Stop service
+./deploy.sh stop
+
+# Restart service (skips dependency checks)
+./deploy.sh restart
+
+# Interactive debug mode
+./deploy.sh debug
+
+# View logs
+./deploy.sh logs
+
+# Live monitoring dashboard
+./deploy.sh watch
+
+# Interactive shell
+./deploy.sh shell
+
+# Show service status
+./deploy.sh status
+
+# Check health endpoint
+./deploy.sh health
+
+# Clean up everything
+./deploy.sh clean
+```
+
+### Prerequisites
+
+The script requires APISIX stack to be running:
+- Docker network: `apisix-network`
+- APISIX gateway: `apisix-gateway`
+- PostgreSQL: `apisix-dagobah-postgres`
+
+Start APISIX first:
+```bash
+cd /3spread/apisix-dagobah
+docker-compose up -d
+```
+
+### Environment Configuration
+
+The script automatically creates `.env` from `.env.production.example` if it doesn't exist. Review and update as needed:
+
+```bash
+# Edit environment variables
+nano .env
+```
 
 ## Health Checks
 
